@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="wordcloud">
+    <CLASSES>
+      <root url="file:///opt/wordcloud" />
+      <root url="file:///opt/wordcloud" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file:///opt/wordcloud" recursive="false" />
+  </library>
+</component>

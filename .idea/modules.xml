@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file:///opt/mallet/src//mallet.iml" filepath="/opt/mallet/src//mallet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/topics.iml" filepath="$PROJECT_DIR$/topics.iml" />
+    </modules>
+  </component>
+</project>
+
