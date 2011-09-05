@@ -90,13 +90,17 @@ public class TopicModeler {
                 break;
         }
         ParallelTopicModel mymodel = (ParallelTopicModel) model;
-        for (int i = 0; i< 10; i++){
+        for (int i = 0; i< 5; i++){
+            System.out.println(mymodel.getData().get(i).instance.getSource());
             System.out.println(Arrays.toString(mymodel.getTopicProbabilities(i)));
         }
         System.out.println("Total:");
         System.out.println(Arrays.toString(mymodel.getTopicProbabilities()));
         InstanceList test1 = readDir("/data/reviews/bb_eq/test/", _instances.getPipe());
-        
+        for (Instance instance : test1){
+            System.out.println(instance.getSource());
+            System.out.println(Arrays.toString(mymodel.getInferencer().getSampledDistribution(instance, _numIterations, 1, 1)));
+        }
         System.exit(0);
         return model;
     }
