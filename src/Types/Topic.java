@@ -1,7 +1,5 @@
 package Types;
 
-import org.apache.commons.collections.keyvalue.MultiKey;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -15,17 +13,21 @@ import java.io.Writer;
  * Time: 8:32 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Topic extends MultiKey {
+public class Topic{
+    private String _name;
+    private Iterable<WeightedWord> _collection;
+
     public Topic(String name, Iterable<WeightedWord> collection) {
-        super(name, collection);
+        _name = name;
+        _collection = collection;
     }
 
     public String getName() {
-        return (String) super.getKey(0);
+        return _name;
     }
 
     public Iterable<WeightedWord> getCollection() {
-        return (Iterable<WeightedWord>) super.getKey(1);
+        return _collection;
     }
 
     public void dumpToCSV(File file)

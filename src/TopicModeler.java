@@ -36,7 +36,7 @@ import cc.mallet.topics.*;
 
 public class TopicModeler {
 
-    private static String _sourceTextPath = "/data/reviews/bb_eq/train/";
+    private static String _sourceTextPath = "/data/reviews/0/train/";
     private static String _outputDir = "/home/jroesler/exampleWordles/";
     private static boolean _outputDocSummaryToFile = true;
     private static int _numTopics = 10;
