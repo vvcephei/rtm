@@ -1,11 +1,3 @@
-/**
- * Created by IntelliJ IDEA.
- * User: jroesler
- * Date: 7/5/11
- * Time: 7:44 AM
- * To change this template use File | Settings | File Templates.
- */
-
 import Types.Topic;
 import Types.WeightedWord;
 
@@ -36,13 +28,13 @@ import cc.mallet.topics.*;
 
 public class TopicModeler {
 
-    private static String _sourceTextPath = "/data/reviews/0/train/";
-    private static String _outputDir = "/home/jroesler/exampleWordles/";
+    private static String _sourceTextPath = "/data/tweets/1/train/";
+    private static String _outputDir = "/home/john/repos/ReviewTopicModeler/output/";
     private static boolean _outputDocSummaryToFile = true;
-    private static int _numTopics = 10;
+    private static int _numTopics = 4;
     private static int _numThreads = 10;
     private static int _numTokens = Integer.MAX_VALUE;
-    private static int _numIterations = 100;
+    private static int _numIterations = 1000;
     private static double _alphaSum = 100;
     private static double _beta = 0.01;
 
@@ -68,6 +60,7 @@ public class TopicModeler {
             throws IOException, UnsupportedEncodingException {
 
 
+        Map params;
         TopicModel model;
         switch (modelType) {
             case 0: //PAM
@@ -76,9 +69,20 @@ public class TopicModeler {
 //                model.estimate();
 //                break;
                 throw new RuntimeException();
+            case 1: //topical n_grams //FIXME broken
+                model = new TopicalNGrams(_numTopics);
+                params = new HashMap();
+                params.put(TopicalNGrams.NUM_ITERATIONS, _numIterations);
+                params.put(TopicalNGrams.SHOW_TOPICS_INTERVAL, 100);
+                params.put(TopicalNGrams.OUTPUT_MODEL_INTERVAL, 0);
+                params.put(TopicalNGrams.OUTPUT_MODEL_FILENAME, "");
+                model.setParams(params);
+                model.addInstances(_instances);
+                model.estimate();
+                break;
             default: //LDA
                 model = new ParallelTopicModel();
-                Map params = new HashMap();
+                params = new HashMap();
                 params.put(ParallelTopicModel.NUM_TOPICS, _numTopics);
                 params.put(ParallelTopicModel.NUM_THREADS, _numThreads);
                 params.put(ParallelTopicModel.NUM_ITERATIONS, _numIterations);
@@ -89,19 +93,19 @@ public class TopicModeler {
                 model.estimate();
                 break;
         }
+        /*
         ParallelTopicModel mymodel = (ParallelTopicModel) model;
         for (int i = 0; i< 5; i++){
             System.out.println(mymodel.getData().get(i).instance.getSource());
             System.out.println(Arrays.toString(mymodel.getTopicProbabilities(i)));
         }
         System.out.println("Total:");
-        System.out.println(Arrays.toString(mymodel.getTopicProbabilities()));
-        InstanceList test1 = readDir("/data/reviews/bb_eq/test/", _instances.getPipe());
+        System.out.println(Arrays.toString(mymodel.getTopicProbabilities()));*/
+        /*InstanceList test1 = readDir("/data/reviews/0/test/", _instances.getPipe());
         for (Instance instance : test1){
             System.out.println(instance.getSource());
             System.out.println(Arrays.toString(mymodel.getInferencer().getSampledDistribution(instance, _numIterations, 1, 1)));
-        }
-        System.exit(0);
+        }*/
         return model;
     }
 
@@ -145,7 +149,12 @@ public class TopicModeler {
         pipeList.add(new SaveDataInSource());
         pipeList.add(new Input2CharSequence(Charset.defaultCharset().displayName()));
         pipeList.add(new CharSequenceLowercase());
-        pipeList.add(new CharSequence2TokenSequence());
+//        pipeList.add(new CharSequence2TokenSequence());
+        String url = "(?i)\\b((?:[a-z][\\w-]+:(?:/{1,3}|[a-z0-9%])|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))";
+        String alpha = "\\p{Alpha}+";
+        String ht = "#"+alpha;
+        String mention = "@"+alpha;
+        pipeList.add(new CharSequence2TokenSequence(Pattern.compile(url+"|"+ht+"|"+mention+"|"+alpha)));
         pipeList.add(new TokenSequenceRemoveStopwords());
         pipeList.add(new TokenSequence2FeatureSequence());
         return readDir(dirName, new SerialPipes(pipeList));
@@ -181,7 +190,7 @@ public class TopicModeler {
             tm._instances = tm.readSingleFile(_sourceTextPath);
         }
 
-        TopicModel topics = tm.modelTopics(1);//LDA
+        TopicModel topics = tm.modelTopics(2);
         exitCode = wr.makeWordles(tm.getTopics(topics));
     
         PrintStream docSummary;
